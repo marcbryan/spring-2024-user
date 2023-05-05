@@ -66,6 +66,6 @@ public class AlertController {
     }
 
     // TODO: add the code for the missing system operations here:
-    // 1. remove product by id (user
+    // 1. query alerts by product and date
     // 2. query alerts by user and date interval (all the alerts for the specified user where any day in the interval defined in the parameters is between Alert.from and Alert.to)
 }
