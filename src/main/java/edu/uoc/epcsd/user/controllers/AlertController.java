@@ -1,6 +1,7 @@
 package edu.uoc.epcsd.user.controllers;
 
 import edu.uoc.epcsd.user.controllers.dtos.CreateAlertRequest;
+import edu.uoc.epcsd.user.controllers.dtos.GetAlertResponse;
 import edu.uoc.epcsd.user.entities.Alert;
 import edu.uoc.epcsd.user.services.AlertService;
 import lombok.extern.log4j.Log4j2;
@@ -88,13 +89,16 @@ public class AlertController {
 
     @GetMapping("/{alertId}/details")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Alert> getAlertDetail(@PathVariable @NotNull Long alertId) {
+    public ResponseEntity<GetAlertResponse> getAlertDetail(@PathVariable @NotNull Long alertId) {
         log.trace("getAlertDetails");
 
-        // Es igual que el de buscar por ID
-        return alertService.findById(alertId).map(alert -> ResponseEntity.ok().body(alert))
-                .orElse(ResponseEntity.notFound().build());
+        GetAlertResponse alert = alertService.findAlertDetails(alertId);
+        if (alert != null)
+            return new ResponseEntity<>(alert, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
 
     private ResponseEntity<List<Alert>> generateAlertsResponse(List<Alert> alerts) {
         if (alerts.isEmpty())

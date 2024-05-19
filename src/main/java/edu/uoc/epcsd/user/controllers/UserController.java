@@ -69,5 +69,18 @@ public class UserController {
         return ResponseEntity.created(uri).body(userId);
     }
 
-    // no more operations to add here! go away!
+    /**
+     * Endpoint para comprobar si un usuario existe por el email.
+     * Lo utilizará el microservicio productcatalog para comprobar si el usuario existe cuando se crea una oferta
+     * @param email El email del usuario que buscar
+     * @return El usuario encontrado o status 404
+     */
+    @GetMapping("/exists/{email}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<GetUserResponse> getUserByEmail(@PathVariable @NotNull String email) {
+        log.trace("getUserByEmail");
+
+        return userService.findByEmail(email).map(user -> ResponseEntity.ok().body(GetUserResponse.fromDomain(user)))
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

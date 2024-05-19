@@ -1,5 +1,6 @@
 package edu.uoc.epcsd.user.services;
 
+import edu.uoc.epcsd.user.controllers.dtos.GetAlertResponse;
 import edu.uoc.epcsd.user.controllers.dtos.GetProductResponse;
 import edu.uoc.epcsd.user.entities.Alert;
 import edu.uoc.epcsd.user.entities.User;
@@ -67,5 +68,20 @@ public class AlertService {
 
     public List<Alert> findAlertsByUserIdAndInterval(Long userId, LocalDate fromDate, LocalDate toDate) {
         return alertRepository.findAlertsByUserIdAndInterval(userId, fromDate, toDate);
+    }
+
+    public GetAlertResponse findAlertDetails(Long alertId) {
+        Optional<Alert> alertOpt = alertRepository.findById(alertId);
+        if (alertOpt.isPresent()) {
+            Alert alert = alertOpt.get();
+
+            // Utilizamos RestTemplate para recibir los datos del producto y poderlos enviar
+            ResponseEntity<GetProductResponse> getProductResponseEntity = new RestTemplate().getForEntity(productCatalogUrl, GetProductResponse.class, alert.getProductId());
+            if (getProductResponseEntity.hasBody())
+                return GetAlertResponse.fromDomain(alert, getProductResponseEntity.getBody());
+        }
+
+        // Si no lo encuentra devolvemos null
+        return null;
     }
 }

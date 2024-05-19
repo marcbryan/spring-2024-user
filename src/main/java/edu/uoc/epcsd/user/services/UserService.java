@@ -40,4 +40,8 @@ public class UserService {
 
         return alertRepository.findAlertsByProductIdAndInterval(productId, availableOnDate).stream().map(alert -> alert.getUser()).collect(Collectors.toSet());
     }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }
