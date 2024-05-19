@@ -2,13 +2,7 @@ package edu.uoc.epcsd.user.controllers.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import edu.uoc.epcsd.user.entities.Alert;
-import lombok.EqualsAndHashCode;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -18,7 +12,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 @Builder
 @AllArgsConstructor
-public final class GetAlertResponse {
+public final class SearchAlertResponse {
 
     private Long id;
 
@@ -28,17 +22,18 @@ public final class GetAlertResponse {
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate to;
 
-    private GetProductResponse product;
+    private Long productId;
 
+    // Utilizaremos este DTO para evitar enviar la contraseña al buscar alertas
     private GetUserResponse user;
 
-    public static GetAlertResponse fromDomain(Alert alert, GetProductResponse product) {
-        return GetAlertResponse.builder()
+    public static SearchAlertResponse fromDomain(Alert alert) {
+        return SearchAlertResponse.builder()
                 .id(alert.getId())
                 .from(alert.getFrom())
                 .to(alert.getTo())
                 .user(GetUserResponse.fromDomain(alert.getUser()))
-                .product(product)
+                .productId(alert.getProductId())
                 .build();
     }
 }

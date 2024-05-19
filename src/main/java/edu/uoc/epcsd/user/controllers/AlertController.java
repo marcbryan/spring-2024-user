@@ -2,6 +2,7 @@ package edu.uoc.epcsd.user.controllers;
 
 import edu.uoc.epcsd.user.controllers.dtos.CreateAlertRequest;
 import edu.uoc.epcsd.user.controllers.dtos.GetAlertResponse;
+import edu.uoc.epcsd.user.controllers.dtos.SearchAlertResponse;
 import edu.uoc.epcsd.user.entities.Alert;
 import edu.uoc.epcsd.user.services.AlertService;
 import lombok.extern.log4j.Log4j2;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -69,8 +71,8 @@ public class AlertController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Alert>> getAlertsByProductIdAndInterval(@RequestParam(required = false) Long productId, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate availableOnDate, @RequestParam(required = false) Long userId, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
-        log.trace("getAlertsByProductIdAndInterval");
+    public ResponseEntity<List<SearchAlertResponse>> getAlertsByCriteria(@RequestParam(required = false) Long productId, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate availableOnDate, @RequestParam(required = false) Long userId, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate, @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
+        log.trace("getAlertsByCriteria");
 
         // 1. query alerts by product and date
         if (productId != null && availableOnDate != null) {
@@ -100,10 +102,16 @@ public class AlertController {
     }
 
 
-    private ResponseEntity<List<Alert>> generateAlertsResponse(List<Alert> alerts) {
+    private ResponseEntity<List<SearchAlertResponse>> generateAlertsResponse(List<Alert> alerts) {
         if (alerts.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        else
-            return new ResponseEntity<>(alerts, HttpStatus.OK);
+        else {
+            // Creamos una lista del DTO SearchAlertResponse y los vamos añadiendo a la lista
+            List<SearchAlertResponse> response = new ArrayList<>();
+            for (Alert alert : alerts)
+                response.add(SearchAlertResponse.fromDomain(alert));
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
     }
 }
